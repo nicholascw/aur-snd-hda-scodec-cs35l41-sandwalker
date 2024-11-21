@@ -2,38 +2,42 @@
 
 _pkgbase=snd-hda-scodec-cs35l41-sandwalker-git
 pkgname=${_pkgbase}-dkms
-pkgver=6.12.0
+pkgver=r1.dfaa7ba
 pkgrel=1
 pkgdesc="Patched cs35l41 HDA driver for HP Sandwalker"
-url="https://github.com/nicholascw/aur--dkms"
+url="https://github.com/nicholascw/aur-snd-hda-scodec-cs35l41-sandwalker"
 arch=('any')
 license=('GPL2')
 depends=('dkms')
-source=(
-  "cs35l41_hda.c"
-  "cs35l41_hda.h"
-  "cs35l41_hda_property.c"
-  "cs35l41_hda_property.h"
-  "dkms.conf"
-  "Makefile"
-)
+source=("${pkgname}::git+https://github.com/nicholascw/aur-snd-hda-scodec-cs35l41-sandwalker.git")
+sha256sums=('SKIP')
 
-md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+pkgver() {
+  cd "$srcdir/${pkgname}"
+  ( set -o pipefail
+    git describe --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  )
+}
+
 
 package() {
-  cd "$srcdir"
+  cd "$srcdir/${pkgname}"
   local install_dir="${pkgdir}"/usr/src/${_pkgbase}-${pkgver}
-  install -Dm644 dkms.conf "${install_dir}/dkms.conf"
 
   # Set name and version
   sed -e "s/@_PKGBASE@/${_pkgbase}/" \
       -e "s/@PKGVER@/${pkgver}/" \
       -i "${install_dir}"/dkms.conf
 
-  install -Dm644 cs35l41_hda.c "${install_dir}/cs35l41_hda.c"
-  install -Dm644 cs35l41_hda.h "${install_dir}/cs35l41_hda.h"
-  install -Dm644 cs35l41_hda_property.c "${install_dir}/cs35l41_hda_property.c"
-  install -Dm644 cs35l41_hda_property.h "${install_dir}/cs35l41_hda_property.h"
-  install -Dm644 Makefile "${install_dir}/Makefile"
+  install -Dm644 dkms.conf "${install_dir}/"
+  install -Dm644 Makefile "${install_dir}/"
+
+  for i in $(ls -1 *.c *.h | xargs); do
+    install -Dm644 $i "${install_dir}/"
+  done
+
+  install -Dm644 blacklist.conf "${pkgdir}/etc/modprobe.d/blacklist_snd_hda_scodec_cs35l41.conf"
+
 }
 
