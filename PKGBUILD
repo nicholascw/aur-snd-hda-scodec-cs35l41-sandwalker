@@ -1,7 +1,7 @@
 # Maintainer: Nicholas Wang <me at nicho1as dot wang>
 
-_pkgbase=snd-hda-scodec-cs35l41-sandwalker-git
-pkgname=${_pkgbase}-dkms
+_pkgbase=snd-hda-scodec-cs35l41-sandwalker
+pkgname=${_pkgbase}-dkms-git
 pkgver=r1.dfaa7ba
 pkgrel=1
 pkgdesc="Patched cs35l41 HDA driver for HP Sandwalker"
