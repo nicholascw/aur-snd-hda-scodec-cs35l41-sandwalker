@@ -652,6 +652,15 @@ unsigned int snd_hda_codec_eapd_power_filter(struct hda_codec *codec,
 
 void snd_hda_codec_shutdown(struct hda_codec *codec);
 
+static inline int snd_hda_codec_init(struct hda_codec *codec)
+{
+	struct hda_codec_driver *driver = hda_codec_to_driver(codec);
+
+	if (driver->ops->init)
+		return driver->ops->init(codec);
+	return 0;
+}
+
 /*
  * AMP control callbacks
  */
@@ -688,10 +697,6 @@ int snd_hdmi_get_eld(struct hda_codec *codec, hda_nid_t nid,
 		     unsigned char *buf, int *eld_size);
 void snd_hdmi_eld_update_pcm_info(struct snd_parsed_hdmi_eld *e,
 			      struct hda_pcm_stream *hinfo);
-
-int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
-			 unsigned char *buf, int *eld_size,
-			 bool rev3_or_later);
 
 #ifdef CONFIG_SND_PROC_FS
 void snd_hdmi_print_eld_info(struct hdmi_eld *eld,
